@@ -17,7 +17,7 @@ def get_stemmed_terms_list(doc, stem_words_map = None, stem_bigrams_map = None):
 
     for w in filtered_words:
         if w.isalpha():
-            w_temp = ps.stem_word(w)
+            w_temp = ps.stem(w)
             if stem_words_map is not None:
                 if w_temp not in stem_words_map:
                     stem_words_map[w_temp] = dict()
@@ -63,8 +63,8 @@ def get_terms(ifile, stem_map = None, bigrams_map = None, min_occurence = 0.001)
     fd = nltk.FreqDist()
     r = csv.reader(ifile)
 
-    print "Reading..."
-    headers = r.next()
+    print("Reading...")
+    headers = next(r)
     for tokens in r:
         tweets_no += 1
         id = tokens[0].strip()
@@ -76,11 +76,11 @@ def get_terms(ifile, stem_map = None, bigrams_map = None, min_occurence = 0.001)
         tweets_type.append(type)
         tweets_id.append((id,tweet))
         tweets_terms.append(terms)
-        [fd.inc(x) for x in terms]
+        [fd[x] + 1 for x in terms]
         ws.update(set(terms.keys()))
-    print "... %s tweets"%tweets_no
+    print(f"... {tweets_no} tweets")
 
-    print "Cleaning..."
+    print("Cleaning...")
     for t in tweets_terms:
         s = set()
         term = t.keys()
@@ -92,7 +92,7 @@ def get_terms(ifile, stem_map = None, bigrams_map = None, min_occurence = 0.001)
                 if i == l-1:
                     break
                 for j in range(i+1, l):
-                    wd_occ[(f, term[j])] = wd_occ.get((f, term[j]), 0)+1
+                    wd_occ[(f, list(term)[j])] = wd_occ.get((f, list(term)[j]), 0)+1
         for f in s:
             del t[f]
             ws.discard(f)
