@@ -15,6 +15,7 @@ def get_stemmed_terms_list(doc, stem_words_map = None, stem_bigrams_map = None):
     clean_doc = [(w.strip()).lower() for w in doc.split() if len(w) in range(3,16)]
     filtered_words = [w.strip('.,;?!:)(#') for w in clean_doc if not w.strip('.,;?!:)(#') in stopwords.words('english')]
 
+    #debug note: stem words
     for w in filtered_words:
         if w.isalpha():
             w_temp = ps.stem(w)
@@ -40,7 +41,7 @@ def get_tweet_terms(tweet, stem_map = None, bigrams_map = None):
     words, bigrams = get_stemmed_terms_list(tweet, stem_map, bigrams_map)
     filtered_words = [w for w in words if not w in stopwords.words('english')]
 
-    bigrams = nltk.bigrams(filtered_words)
+    bigrams = nltk.bigrams(filtered_words) # what was the purpose of getting bigrams in this method then if we aren't doing anything with bigrams map?
     words_set = set(filtered_words)
     terms_dict = {}
 
@@ -67,16 +68,17 @@ def get_terms(ifile, stem_map = None, bigrams_map = None, min_occurence = 0.001)
     headers = next(r)
     for tokens in r:
         tweets_no += 1
-        id = tokens[0].strip()
-        tweet = tokens[1].strip()
-        cls = tokens[2].strip()
+        id = tokens[0].strip()  #debug note: tweet id    
+        tweet = tokens[1].strip()   #debug note: tweet text
+        cls = tokens[2].strip()     #debug note: class
         terms = get_tweet_terms(tweet, stem_map, bigrams_map)
 
         tweets_cls.append(cls)
         tweets_type.append(type)
         tweets_id.append((id,tweet))
         tweets_terms.append(terms)
-        [fd[x] + 1 for x in terms]
+        for t in terms:
+            fd[t] += 1
         ws.update(set(terms.keys()))
     print(f"... {tweets_no} tweets")
 
@@ -92,7 +94,9 @@ def get_terms(ifile, stem_map = None, bigrams_map = None, min_occurence = 0.001)
                 if i == l-1:
                     break
                 for j in range(i+1, l):
-                    wd_occ[(f, list(term)[j])] = wd_occ.get((f, list(term)[j]), 0)+1
+                    #updates bigrams, for current unigram f at index i, get the unigram at index j
+                    #(current word, next word) freq += 1
+                    wd_occ[(f, list(term)[j])] = wd_occ.get((f, list(term)[j]), 0)+1 
         for f in s:
             del t[f]
             ws.discard(f)

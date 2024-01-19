@@ -165,8 +165,8 @@ def save_lexicon(output, scored_terms, term_freq, stem, score):
     f2 = open(output[0:len(output)-len(output.split(".")[len(output.split("."))-1])-1]+"_with_scores_%s.txt"%score,"w")
     print("Saving the lexicon to file...")
     for i,t in enumerate(scored_terms):
-        print>>f1,t[0]
-        print>>f2,"%s,%s,%s"%(t[0],t[1],term_freq[stem[i]])
+        f1.write(f"{t[0]}\n")
+        f2.write(f"{t[0]},{t[1]},{term_freq[stem[i]]}\n")
     print("The Lexicon is ready!")
 
 if __name__ == "__main__":

@@ -10,7 +10,8 @@
             "console": "integratedTerminal",
             "args":[
                 "-s", "chi2",
-                "-i", "C:/Users/kdzhou/source/repos/CrisisLex/data/CrisisLexT6" 
+                "-i", "C:/Users/kdzhou/source/repos/CrisisLex/data/LonelinessT6",
+                "-o", "C:/Users/kdzhou/source/repos/CrisisLex/lexicons/LonelinessT6" 
             ]
         }
     ]

@@ -22,7 +22,7 @@ class Lexicon:
         for i, doc in enumerate(self.documents):
             cls = self.classes[i]
             for t in doc:
-                self.terms_frequency_per_class[cls].inc(t)
+                self.terms_frequency_per_class[cls][t] += 1
 
     # the scoring functions return the list of discriminative terms for the class of interest according to each metric
     def pmi_polarity_metric(self, thr = None):
