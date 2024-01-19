@@ -22,7 +22,7 @@ class Lexicon:
         for i, doc in enumerate(self.documents):
             cls = self.classes[i]
             for t in doc:
-                self.terms_frequency_per_class[cls].inc(t)
+                self.terms_frequency_per_class[cls][t] += 1
 
     # the scoring functions return the list of discriminative terms for the class of interest according to each metric
     def pmi_polarity_metric(self, thr = None):
@@ -46,7 +46,7 @@ class Lexicon:
                         if pmi<0:
                             pmi = 0
             except:
-                print "I can't compute the crisis score. Do you have enough training data?"
+                print("I can't compute the crisis score. Do you have enough training data?")
             if thr is None:
                 terms[t] = pmi
             else:
@@ -82,7 +82,7 @@ class Lexicon:
                     if chi2>=thr:
                         terms[t] = chi2
             except:
-                print "I can't compute the crisis score. Do you have enough training data?"
+                print("I can't compute the crisis score. Do you have enough training data?")
         return terms
 
     def frequency_metric(self, thr = None):
@@ -93,7 +93,7 @@ class Lexicon:
                 try:
                     p = float(fr)/self.class_occ[self.main_class]
                 except:
-                    print "I can't compute the crisis score. Do you have enough training data?"
+                    print("I can't compute the crisis score. Do you have enough training data?")
 
                 if thr is None:
                     terms[t] = p

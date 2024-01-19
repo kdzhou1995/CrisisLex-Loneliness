@@ -149,8 +149,8 @@ def reverse_stemming(stem_map):
                 max = stem_map[s][w]
                 aux = w
         if aux is None:
-            print "Generate map: The word was not stemmed", s
-            print stem_map
+            print("Generate map: The word was not stemmed", s)
+            print(stem_map)
             exit(0)
         rev_stemming[s] = aux
     return rev_stemming
@@ -163,11 +163,11 @@ def save_lexicon(output, scored_terms, term_freq, stem, score):
     ps = PorterStemmer()
     f1 = open(output, "w")
     f2 = open(output[0:len(output)-len(output.split(".")[len(output.split("."))-1])-1]+"_with_scores_%s.txt"%score,"w")
-    print "Saving the lexicon to file..."
+    print("Saving the lexicon to file...")
     for i,t in enumerate(scored_terms):
-        print>>f1,t[0]
-        print>>f2,"%s,%s,%s"%(t[0],t[1],term_freq[stem[i]])
-    print "The Lexicon is ready!"
+        f1.write(f"{t[0]}\n")
+        f2.write(f"{t[0]},{t[1]},{term_freq[stem[i]]}\n")
+    print("The Lexicon is ready!")
 
 if __name__ == "__main__":
 
@@ -208,19 +208,19 @@ if __name__ == "__main__":
         exit("The terms scoring parameter accepts only the following options: pmi, chi2, frequency")
 
     #extracts terms and computes statistics about them
-    print "Extracting the data..."
+    print("Extracting the data...")
     labeled_collections = glob.glob(options.input+"/*")
     for l in labeled_collections:
         if not os.path.isdir(l):
             continue
         collection_path = glob.glob(l+"/*")
-        print collection_path
+        print(collection_path)
         for c in collection_path:
-            print c
-            labeled_data = open(c, "r")
+            print(c)
+            labeled_data = open(c, "r", encoding="utf8")
             collections.add(c)
             tweets_cls[c], tweets_terms[c], wd_occ[c], word_set[c], fd[c] = read.get_terms(labeled_data, stem_map, bigrams_map)
-    print "Done with reading..."
+    print("Done with reading...")
 
     term_weights, occs, fd_all = get_raw_lexicon(collections, tweets_terms, word_set, tweets_cls, wd_occ, fd, get_aggregated_score, discriminative_function, options.hit_ratio)
     if options.optimization:
