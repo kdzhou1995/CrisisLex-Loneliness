@@ -101,3 +101,6 @@ class Lexicon:
                     if p>=thr:
                         terms[t] = p
         return terms
+
+    def RSV_metric():
+        return null
