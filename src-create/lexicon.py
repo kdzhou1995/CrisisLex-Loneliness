@@ -33,9 +33,11 @@ class Lexicon:
                 continue
             try:
                 # tweets that contain t and are in the class
+                # relevant, present
                 n11 = self.terms_frequency_per_class[self.main_class][t]
                 # tweets that contain t and are not in the class; we add 1 to ensure that pmi never defaults to inf
-                n01 = self.terms_frequency[t] - n11 +1
+                # relevant, not present
+                n01 = self.terms_frequency[t] - n11
                 if n11 == 0:
                     pmi = 0
                 else:
@@ -65,7 +67,7 @@ class Lexicon:
                 n11 = self.terms_frequency_per_class[self.main_class][t] # tweets that contain t and are in the class
                 n01 = self.terms_frequency[t] - n11 # tweets that contain t and are not in the class
                 n10 = self.class_occ[self.main_class] - n11 # tweets that do not contain t and are in the class
-                n00 = (n - self.class_occ[self.main_class]) - n01
+                n00 = (n - self.class_occ[self.main_class]) - n01 # tweets that do not contain t and are not in the class
                 p_t_pos = float(n11)/self.class_occ[self.main_class]
                 p_t_neg = float(n01)/(len(self.documents)-self.class_occ[self.main_class])
 
@@ -102,5 +104,32 @@ class Lexicon:
                         terms[t] = p
         return terms
 
-    def RSV_metric():
-        return null
+    def rsv_metric(self, thr = None):
+        # Robertson's Selection Value (RSV)
+        terms = {}
+        n = len(self.documents)
+        for t in self.terms:
+            fr = self.terms_frequency_per_class[self.main_class][t]
+            if fr<= self.min_docs:
+                continue
+            try:
+                n11 = self.terms_frequency_per_class[self.main_class][t] # (A) tweets that contain t and are in the class
+                n01 = self.terms_frequency[t] - n11 # (B) tweets that contain t and are not in the class
+                n10 = self.class_occ[self.main_class] - n11 # (C) tweets that do not contain t and are in the class
+                n00 = (n - self.class_occ[self.main_class]) - n01 # (D) tweets that do not contain t and are not in the class
+                p_t_pos = float(n11)/self.class_occ[self.main_class]
+                p_t_neg = float(n01)/(len(self.documents)-self.class_occ[self.main_class])
+
+                if n01 == 0:
+                    n01 = 1
+                if n10 == 0:
+                    n10 = 1
+                if n00 == 0:
+                    n00 = 1
+
+                rsv = n11 * math.log((n11 * n00)/(n01 * n10))
+
+                terms[t] = rsv
+            except:
+                print("I can't compute the crisis score. Do you have enough training data?")
+        return terms
