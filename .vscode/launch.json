@@ -10,6 +10,8 @@
             "console": "integratedTerminal",
             "args":[
                 "-s", "rsv",
+                "-r",
+                "-t",
                 "-i", "C:/Users/kdzhou/source/repos/CrisisLex/data/LonelinessT6",
                 "-o", "C:/Users/kdzhou/source/repos/CrisisLex/lexicons/LonelinessT6" 
             ]
