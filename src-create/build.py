@@ -28,7 +28,7 @@ def extract_max_weight_indep_terms_greedy(terms_weights, term_occ, freq, size, m
         G.add_node(t, score = term_weights[t])
 
     # add edges
-    terms = term_weights.keys()
+    terms = list(term_weights.keys())
     for i,t in enumerate(terms):
         if i == l-1:
             break
@@ -48,7 +48,7 @@ def extract_max_weight_indep_terms_greedy(terms_weights, term_occ, freq, size, m
             break
         node = sorted_terms[0]
         indep.append(node)
-        ng = G.neighbors(node)
+        ng = list(G.neighbors(node))
         sorted_terms.remove(node)
         for n in ng:
             sorted_terms.remove(n)
@@ -66,49 +66,51 @@ def discriminative_coverage(term_weights, hit_ratio = None):
     i = len(term_weights)
     l = i
 
-    sorted_terms = sorted(term_weights, key=term_weights.get, reverse=True)
+    sorted_terms = sorted(term_weights, key=term_weights.get, reverse=True) # sort by indicator value, return words
     # discriminative sorting of quantiles
     for t in sorted_terms:
-        weights[t] = float(i)/l
+        weights[t] = float(i)/l # store word as key, store "rank" as value. Note that the rank is decremented at each iteration
         i-=1
     if hit_ratio is None:
         return weights
 
-    i=l
-    sorted_terms = sorted(hit_ratio, key=hit_ratio.get, reverse=True)
-    #normalized by hit-ratio based quantiles
+    i=l # resets rank
+    sorted_terms = sorted(hit_ratio, key=hit_ratio.get, reverse=True) # sort hit ratio, rank by hit ratio
+    # normalized by hit-ratio based quantiles
     for t in sorted_terms:
         if t in term_weights:
-            weights[t] *= float(i)/l
+            weights[t] *= float(i)/l # multiply quantile rank by hit ratio
             i-=1
 
     return weights
 
 #generates the lexicon
+# inputs: 
 def get_raw_lexicon(collections, tweets_terms, word_set, tweets_cls, word_occ, fd, mean_function, discriminative_function, use_hit_ratio = False):
-    occs, fd_all = dict(), nltk.FreqDist()
+    occs, fd_all = dict(), nltk.FreqDist() ## occurences dictionary, frequency distribution
     term_weights = dict()
     if use_hit_ratio:
         hit_ratios = dict()
 
     for d in collections:
         lex = lexicon.Lexicon(tweets_terms[d], word_set[d], tweets_cls[d], [config.positive_class_label, config.negative_class_label], fd[d], config.positive_class_label, 20)
-        w = discriminative_function(lex)
-        for occ in word_occ[d]:
-            occs[occ] = occs.get(occ,0)+word_occ[d][occ]
+        w = discriminative_function(lex)    # rsv, drc, pmi, freq dist, chi2 indicators
+        for occ in word_occ[d]: # for each key (two words) in dct
+            occs[occ] = occs.get(occ, 0) + word_occ[d][occ] # for each co-occurence of two words, add the count of the co-occurence. Aggregates co-occurence for terms across the corpus
         for fr in fd[d]:
-            fd_all[fr] = fd_all.get(fr,0)+fd[d][fr]
-        for term in w:
+            fd_all[fr] = fd_all.get(fr,0) + fd[d][fr] # for each term in the frequency distribution, set term as dict key, aggregate the frequencies across the entire corpus
+        for term in w: # for each term thats been used to calculate our indicators, 
             if term not in term_weights:
-                term_weights[term] = []
-            term_weights[term].append(w[term])
+                term_weights[term] = [] 
+            term_weights[term].append(w[term]) # create a term weights dictionary with the term as key and indicator value as value
             if use_hit_ratio:
                 if term not in hit_ratios:
                     hit_ratios[term] = []
+                ## gets the main class and the term's frequency within the main class (+, lonely), divides that by the total occurences of the main (+ lonely) class.
                 hit_ratios[term].append(float(lex.terms_frequency_per_class[lex.main_class][term])/lex.class_occ[lex.main_class])
 
     for term in term_weights:
-        term_weights[term] = mean_function(term_weights[term])
+        term_weights[term] = mean_function(term_weights[term]) ## calculate mean function over the index of a term
 
     if use_hit_ratio:
         for term in term_weights:
@@ -192,20 +194,24 @@ if __name__ == "__main__":
 
     (options, args) = parser.parse_args()
 
-    tweets_cls = dict()
-    tweets_terms = dict()
-    wd_occ = dict()
-    word_set = dict()
+    tweets_cls = dict()     #classes
+    tweets_terms = dict()   #
+    wd_occ = dict()         # word occurences?
+    word_set = dict()       #
     fd = dict()
     stem_map, bigrams_map = dict(), dict()
-    collections = set()
+    collections = set()     # the set of all collection, paths
 
     #set discriminative functions
-    scoring_options = {'pmi':lexicon.Lexicon.pmi_polarity_metric,'chi2':lexicon.Lexicon.chi2_metric,'frequency':lexicon.Lexicon.frequency_metric}
+    scoring_options = {'pmi': lexicon.Lexicon.pmi_polarity_metric
+                       ,'chi2': lexicon.Lexicon.chi2_metric
+                       ,'frequency': lexicon.Lexicon.frequency_metric
+                       ,'rsv': lexicon.Lexicon.rsv_metric
+                       ,'drc': lexicon.Lexicon.drc_metric}
     try:
         discriminative_function = scoring_options[options.test]
     except:
-        exit("The terms scoring parameter accepts only the following options: pmi, chi2, frequency")
+        exit("The terms scoring parameter accepts only the following options: pmi, chi2, frequency, rsv, drc")
 
     #extracts terms and computes statistics about them
     print("Extracting the data...")

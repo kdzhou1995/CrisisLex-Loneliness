@@ -4,12 +4,14 @@
 
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args":[
-                "-s", "chi2",
+                "-s", "drc",
+                "-r",
+                "-t",
                 "-i", "C:/Users/kdzhou/source/repos/CrisisLex/data/LonelinessT6",
                 "-o", "C:/Users/kdzhou/source/repos/CrisisLex/lexicons/LonelinessT6" 
             ]
