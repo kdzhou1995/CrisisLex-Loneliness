@@ -148,14 +148,6 @@ class Lexicon:
                 n10 = self.class_occ[self.main_class] - n11 # (C) tweets that do not contain t and are in the class
                 n00 = (n - self.class_occ[self.main_class]) - n01 # (D) tweets that do not contain t and are not in the class
 
-                ## prevent divide by zero errors
-                if n01 == 0:
-                    n01 = 1
-                if n10 == 0:
-                    n10 = 1
-                if n00 == 0:
-                    n00 = 1
-
                 ## calculate DRC
                 ## drc = (A^2)/sqrt(A + B)
                 drc = (n11 ** 2) / math.sqrt(n11 + n01)
