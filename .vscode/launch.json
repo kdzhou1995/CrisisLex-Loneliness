@@ -4,12 +4,12 @@
 
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "args":[
-                "-s", "rsv",
+                "-s", "drc",
                 "-r",
                 "-t",
                 "-i", "C:/Users/kdzhou/source/repos/CrisisLex/data/LonelinessT6",

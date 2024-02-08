@@ -206,11 +206,12 @@ if __name__ == "__main__":
     scoring_options = {'pmi': lexicon.Lexicon.pmi_polarity_metric
                        ,'chi2': lexicon.Lexicon.chi2_metric
                        ,'frequency': lexicon.Lexicon.frequency_metric
-                       ,'rsv': lexicon.Lexicon.rsv_metric}
+                       ,'rsv': lexicon.Lexicon.rsv_metric
+                       ,'drc': lexicon.Lexicon.drc_metric}
     try:
         discriminative_function = scoring_options[options.test]
     except:
-        exit("The terms scoring parameter accepts only the following options: pmi, chi2, frequency, rsv")
+        exit("The terms scoring parameter accepts only the following options: pmi, chi2, frequency, rsv, drc")
 
     #extracts terms and computes statistics about them
     print("Extracting the data...")
